@@ -4,13 +4,13 @@ CREATE DATABASE shop;
 -- テーブル作成
 CREATE TABLE Product
 (
-    product_id     CHAR(4)      NOT NULL,
-    product_name    VARCHAR(100) NOT NULL,
-    product_category VARCHAR(32)  NOT NULL,
-    selling_price  INTEGER      ,
-    purchase_price  INTEGER      ,
-    registration      DATE         ,
-    PRIMARY KEY (product_id)
+    product_id     CHAR(4)      NOT NULL
+    , product_name    VARCHAR(100) NOT NULL
+    , product_category VARCHAR(32)  NOT NULL
+    , selling_price  INTEGER
+    , purchase_price  INTEGER
+    , registration      DATE
+    , PRIMARY KEY (product_id)
 );
 
 -- テーブル削除
