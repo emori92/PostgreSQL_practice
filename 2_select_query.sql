@@ -141,11 +141,11 @@ WHERE
 
 
 -- テーブル作成
-CREATE TABLE chars
-(
+CREATE TABLE chars (
     chr CHAR(3) NOT NULL
     , PRIMARY KEY(chr)
-);
+)
+;
 
 -- 値挿入
 BEGIN TRANSACTION;

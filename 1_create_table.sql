@@ -2,8 +2,7 @@
 CREATE DATABASE shop;
 
 -- テーブル作成
-CREATE TABLE Product
-(
+CREATE TABLE Product (
     product_id     CHAR(4)      NOT NULL
     , product_name    VARCHAR(100) NOT NULL
     , product_category VARCHAR(32)  NOT NULL
@@ -11,7 +10,8 @@ CREATE TABLE Product
     , purchase_price  INTEGER
     , registration      DATE
     , PRIMARY KEY (product_id)
-);
+)
+;
 
 -- テーブル削除
 DROP TABLE Product;
@@ -39,14 +39,14 @@ ALTER TABLE Product RENAME TO product;
 
 
 -- 練習問題
-CREATE TABLE contact
-(
+CREATE TABLE contact (
     register_number INTEGER NOT NULL
     , names VARCHAR(128) NOT NULL
     , addresses VARCHAR(256) NOT NULL
     , telephone CHAR(10)
     , mail_address CHAR(20)
-);
+)
+;
 
 ALTER TABLE contact ADD COLUMN post_number CHAR(8) NOT NULL;
 
