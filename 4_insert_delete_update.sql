@@ -112,3 +112,82 @@ FROM
 GROUP BY
     product_category
 ;
+
+
+-- テーブルを全行削除する
+DELETE
+FROM
+    product
+;
+
+
+-- 販売単価が4000円以上のレコードを削除
+DELETE
+FROM
+    product
+WHERE
+    selling_price >= 4000
+;
+
+/*
+削除すると、原則的に元に戻せない。
+DELETEは実行する前にSELECTで間違ってないか確認する
+*/
+
+
+-- テーブルを全行削除する（高速）
+TRUNCATE copy_product;
+
+
+-- レコードを更新する
+UPDATE
+    product
+SET
+    registration = '2009-10-10'
+;
+
+-- 「キッチン用品」の販売単価を10倍する
+UPDATE
+    product
+SET
+    selling_price = selling_price * 10
+WHERE
+    product_category = 'キッチン用品'
+;
+
+
+-- idが8の登録日をNULLにする(NULLクリア)
+UPDATE
+    product
+SET
+    registration = NULL
+WHERE
+    product_id = '0008'
+;
+
+
+-- 「キッチン用品」の販売単価を10倍、仕入単価を0.5倍する(複数列の更新)
+UPDATE
+    product
+SET
+    selling_price = selling_price * 10
+    , purchase_price = purchase_price / 2
+WHERE
+    product_category = 'キッチン用品'
+;
+
+
+-- 別の方法(Posgreなど一部のRDBしか利用できない)
+UPDATE
+    product
+SET
+    (
+        selling_price
+        , purchase_price
+    ) = (
+        selling_price * 10
+        , purchase_price / 2
+    )
+WHERE
+    product_category = 'キッチン用品'
+;
