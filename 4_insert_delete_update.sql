@@ -191,3 +191,146 @@ SET
 WHERE
     product_category = 'キッチン用品'
 ;
+
+
+-- TRANSACTION(挿入/削除/更新のひとまとまり)
+BEGIN TRANSACTION;
+    UPDATE
+        product
+    SET
+        selling_price = selling_price - 1000
+    WHERE
+        product_name = 'カッターシャツ'
+    ;
+
+    UPDATE
+        product
+    SET
+        selling_price = selling_price + 1000
+    WHERE
+        product_name = 'Tシャツ'
+    ;
+COMMIT;
+
+/*
+COMMITするとTRANSACTION開始前に戻せない
+ROLLBACKはTRANSACTIONの処理を全て取り消す
+*/
+
+BEGIN TRANSACTION;
+    UPDATE
+        product
+    SET
+        selling_price = selling_price - 1000
+    WHERE
+        product_name = 'カッターシャツ'
+    ;
+
+    UPDATE
+        product
+    SET
+        selling_price = selling_price + 1000
+    WHERE
+        product_name = 'Tシャツ'
+    ;
+    SELECT * FROM product;
+ROLLBACK;
+
+SELECT * FROM product;
+
+
+-- 練習
+-- レコードを全て削除
+BEGIN TRANSACTION;
+    TRUNCATE product;
+COMMIT;
+
+
+-- 3つのレコードを挿入
+BEGIN TRANSACTION;
+    INSERT INTO
+        product
+    VALUES
+        ('0001', 'Tシャツ', '衣服', 1000, 500, '2008-09-20')
+        , ('0002', '穴あけパンチ', '事務用品', 500, 320, '2008-09-11')
+        , ('0003', 'カッターシャツ', '衣服', 4000, 2800, NULL)
+    ;
+COMMIT;
+
+
+-- 全抽出
+SELECT * FROM product;
+
+
+-- テーブルのレコードをコピーし挿入(エラーになる)
+BEGIN TRANSACTION;
+    INSERT INTO
+        product
+    SELECT
+        *
+    FROM
+        product
+    ;
+    SELECT * FROM product;
+COMMIT;
+
+
+-- 差益カラムを追加したテーブルを作成
+CREATE TABLE benefit (
+    product_id          CHAR(4)         NOT NULL
+    , product_name      VARCHAR(100)    NOT NULL
+    , selling_price     INTEGER         DEFAULT 0
+    , purchase_price    INTEGER
+    , benefit           INTEGER
+    , PRIMARY KEY (product_id)
+)
+;
+
+
+-- データ登録
+BEGIN TRANSACTION;
+    INSERT INTO
+        benefit
+    SELECT
+        product_id
+        , product_name
+        , selling_price
+        , purchase_price
+        , selling_price - purchase_price
+    FROM
+        product
+    WHERE
+        product_name = 'Tシャツ'
+    OR
+        product_name = '穴あけパンチ'
+    OR
+        product_name = 'カッターシャツ'
+    ;
+COMMIT;
+
+
+-- 全抽出
+SELECT * FROM benefit;
+
+
+-- カッターシャツの販売単価を1000円下げ、差益も反映させる
+BEGIN TRANSACTION;
+    UPDATE
+        benefit
+    SET
+        selling_price = selling_price - 1000
+    WHERE
+        product_name = 'カッターシャツ'
+    ;
+
+    UPDATE
+        benefit
+    SET
+        benefit = selling_price - purchase_price
+    ;
+    SELECT * FROM benefit;
+COMMIT;
+
+
+-- 全抽出
+SELECT * FROM benefit;
