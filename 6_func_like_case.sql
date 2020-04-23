@@ -487,3 +487,42 @@ WHERE
             p.product_id = s.product_id
     )
 ;
+
+
+-- 「A: キッチン」のように文字を組み合わせてカテゴリを出力する (case式)
+SELECT
+    product_name
+    , CASE
+        WHEN product_category = '衣服' THEN 'A:' || product_category
+        WHEN product_category = '事務用品' THEN 'B:' || product_category
+        WHEN product_category = 'キッチン用品' THEN 'C:' || product_category
+        ELSE NULL
+    END AS category
+FROM
+    product
+;
+
+
+-- カテゴリの合計を抽出
+SELECT
+    SUM(CASE WHEN product_category = '衣服' THEN selling_price ELSE 0 END) AS "衣服"
+    , SUM(CASE WHEN product_category = 'キッチン用品' THEN selling_price ELSE 0 END) AS "キッチン用品"
+    , SUM(CASE WHEN product_category = '事務用品' THEN selling_price ELSE 0 END) AS "事務用品"
+FROM
+    product
+;
+
+
+/*  以下のような出力をする
+ low_price | mid_price | high_price
+-----------+-----------+------------
+         5 |         1 |          2
+*/
+
+SELECT
+    SUM(CASE WHEN selling_price <= 1000 THEN 1 ELSE 0 END) AS low_price
+    , SUM(CASE WHEN selling_price > 1000 AND selling_price <= 3000 THEN 1 ELSE 0 END) AS mid_price
+    , SUM(CASE WHEN selling_price > 3000 THEN 1 ELSE 0 END) AS high_price
+FROM
+    product
+;
