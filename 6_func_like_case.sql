@@ -62,7 +62,7 @@ FROM
 CREATE TABLE sample_str (
     str1    VARCHAR(40)
     , str2  VARCHAR(40)
-    , str3  varchar(40)
+    , str3  VARCHAR(40)
 )
 ;
 
@@ -229,4 +229,261 @@ SELECT
     , COALESCE(n, ROUND((SELECT AVG(n) FROM sample_math), 1))
 FROM
     sample_math
+;
+
+
+-- 部分一致のテーブル作成
+CREATE TABLE sample_like (
+    str_col VARCHAR(6) NOT NULL
+    , PRIMARY KEY (str_col)
+)
+;
+
+BEGIN TRANSACTION;
+    INSERT INTO
+        sample_like
+    VALUES
+        ('abcddd')
+        , ('dddabc')
+        , ('abdddc')
+        , ('abcdd')
+        , ('ddabc')
+        , ('abddc')
+    ;
+COMMIT;
+
+
+-- 前方一致
+SELECT
+    str_col
+FROM
+    sample_like
+WHERE
+    str_col LIKE 'ddd%'
+;
+
+
+-- 中間一致
+SELECT
+    str_col
+FROM
+    sample_like
+WHERE
+    str_col LIKE '%ddd%'
+;
+
+
+-- 後方一致
+SELECT
+    str_col
+FROM
+    sample_like
+WHERE
+    str_col LIKE '%ddd'
+;
+
+
+-- 先方一致で、任意の２文字
+SELECT
+    str_col
+FROM
+    sample_like
+WHERE
+    str_col LIKE 'abc__'
+;
+
+
+-- 販売単価が100~1000円を抽出 (範囲検索)
+SELECT
+    product_name
+    , selling_price
+FROM
+    product
+WHERE
+    selling_price BETWEEN 100 AND 1000
+;
+
+
+-- NULLの検索
+SELECT
+    product_name
+    , purchase_price
+FROM
+    product
+WHERE
+    purchase_price IS NULL
+;
+
+
+-- NULL以外を抽出
+SELECT
+    product_name
+    , purchase_price
+FROM
+    product
+WHERE
+    purchase_price IS NOT NULL
+;
+
+
+-- 仕入単価が320, 500, 5000円の物を抽出
+SELECT
+    product_name
+    , purchase_price
+FROM
+    product
+WHERE
+    purchase_price IN (320, 500, 5000)
+;
+
+
+-- 仕入単価が上記以外を抽出
+SELECT
+    product_name
+    , purchase_price
+FROM
+    product
+WHERE
+    purchase_price NOT IN (320, 500, 5000)
+;
+
+
+-- 店舗毎の在庫を示すテーブルを作成
+CREATE TABLE shop (
+    shop_id        CHAR(4)         NOT NULL
+    , shop_name     VARCHAR(200)    NOT NULL
+    , product_id    CHAR(4)         NOT NULL    
+    , stock_num     INTEGER         NOT NULL
+    , PRIMARY KEY (shop_id, product_id)
+)
+;
+
+BEGIN TRANSACTION;
+    INSERT INTO
+        shop
+    VALUES
+        ('000A',	'東京',		'0001',	30)
+        , ('000A',	'東京',		'0002',	50)
+        , ('000A',	'東京',		'0003',	15)
+        , ('000B',	'名古屋',	'0002',	30)
+        , ('000B',	'名古屋',	'0003',	120)
+        , ('000B',	'名古屋',	'0004',	20)
+        , ('000B',	'名古屋',	'0006',	10)
+        , ('000B',	'名古屋',	'0007',	40)
+        , ('000C',	'大阪',		'0003',	20)
+        , ('000C',	'大阪',		'0004',	50)
+        , ('000C',	'大阪',		'0006',	90)
+        , ('000C',	'大阪',		'0007',	70)
+        , ('000D',	'福岡',		'0001',	100)
+        ;
+COMMIT;
+
+SELECT * FROM shop;
+
+
+-- 大阪点の商品で販売単価を求める
+SELECT
+    product_name
+    , selling_price
+FROM
+    product
+WHERE
+    product_id IN (
+        SELECT
+            product_id
+        FROM
+            shop
+        WHERE
+            shop_id = '000C'
+    )   
+;
+
+
+-- ビューでも可能
+CREATE VIEW osaka
+AS
+    SELECT
+        product_id
+    FROM
+        shop
+    WHERE
+        shop_id = '000C'
+;
+
+SELECT
+    product_name
+    , selling_price
+FROM
+    product
+WHERE
+    product_id IN (
+        SELECT
+            *
+        FROM
+            osaka
+    )
+;
+
+
+-- 「東京においてある商品」以外を抽出
+SELECT
+    product_name
+    , selling_price
+FROM
+    product
+WHERE
+    product_id NOT IN (
+        SELECT
+            product_id
+        FROM
+            shop
+        WHERE
+            shop_id = '000A'
+    )
+;
+
+
+-- 大阪店舗で大阪店と商品テーブルのidが同じ
+SELECT
+    product_name
+    , selling_price
+FROM
+    product AS p
+WHERE
+    EXISTS (
+        SELECT
+            *
+        FROM
+            shop AS s
+        WHERE
+            shop_id = '000C'
+        AND
+            p.product_id = s.product_id
+    )
+;
+
+
+/*
+相関サブクエリ内の[*]は、慣習的に書いている。
+[1]などの定数でも実行可能
+*/
+
+
+-- 東京に置いてある商品以外の販売単価 (NOT EXISTS)
+SELECT
+    product_name
+    , selling_price
+FROM
+    product AS p
+WHERE
+    NOT EXISTS (
+        SELECT
+            *
+        FROM
+            shop AS s
+        WHERE
+            shop_id = '000A'
+        AND
+            p.product_id = s.product_id
+    )
 ;
