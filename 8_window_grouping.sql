@@ -138,3 +138,113 @@ FROM
 ORDER BY
     ranking
 ;
+
+
+-- カテゴリの合計と小計を求める (ROLLUP)
+SELECT
+    product_category
+    , SUM(selling_price) AS sum_selling_price
+FROM
+    product
+GROUP BY
+    ROLLUP(product_category)
+;
+
+
+-- カテゴリと登録日の合計と小計を求める
+SELECT
+    product_category
+    , registration
+    , SUM(selling_price) AS sum_selling_price
+FROM
+    product
+GROUP BY
+    ROLLUP(
+        product_category
+        , registration
+    )
+ORDER BY
+    product_category
+;
+
+
+-- NULLを[0]、超集合のNULLを[1]にする (GROUPING)
+SELECT
+    GROUPING(product_category) AS category
+    , GROUPING(registration) AS registration
+    , SUM(selling_price) AS sum_selling_price
+FROM
+    product
+GROUP BY
+    ROLLUP(
+        product_category
+        , registration
+    )
+;
+
+
+-- 超集合のNULLに特定の文字を割り当てる
+SELECT
+    CASE
+        WHEN GROUPING(product_category) = 1 THEN '合計'
+        WHEN GROUPING(product_category) = 0 AND GROUPING(registration) = 1 THEN '小計 (' || product_category || ')'
+        WHEN GROUPING(product_category) = 0 THEN product_category
+        ELSE '※ NULLです！'
+    END AS category
+    , CASE
+        WHEN GROUPING(registration) = 1 THEN CAST('----------' AS VARCHAR(16))
+        WHEN GROUPING(registration) = 0 THEN CAST(registration AS VARCHAR(16))
+        ELSE '出力されない...'
+    END AS registration
+    , SUM(selling_price) AS sum_selling_price
+FROM
+    product
+GROUP BY
+    ROLLUP(
+        product_category
+        , registration
+    )
+ORDER BY
+    product_category
+;
+
+
+-- カテゴリと登録日の合計に加え、登録日のみの合計も抽出 (CUBE)
+SELECT
+    CASE
+        WHEN GROUPING(product_category) = 1 THEN '合計'
+        WHEN GROUPING(product_category) = 0 AND GROUPING(registration) = 1 THEN '小計 (' || product_category || ')'
+        WHEN GROUPING(product_category) = 0 THEN product_category
+        ELSE '※ NULLです！'
+    END AS product_category
+    , CASE
+        WHEN GROUPING(registration) = 1 THEN CAST('----------' AS VARCHAR(16))
+        WHEN GROUPING(registration) = 0 THEN CAST(registration AS VARCHAR(16))
+        ELSE '※ NULLと出力されない...'
+    END AS registration
+    , SUM(selling_price) AS sum_selling_price
+FROM
+    product
+GROUP BY
+    CUBE(
+        product_category
+        , registration
+    )
+ORDER BY
+    product_category
+;
+
+
+-- 練習
+-- 登録日を昇順で累計を抽出。ただしNULLは一番はじめに出力する
+SELECT
+    product_name
+    , registration
+    , selling_price
+    , SUM(selling_price) OVER (
+        ORDER BY
+            COALESCE(registration, CAST('0001-01-01' AS DATE))
+    )
+FROM
+    product
+;
