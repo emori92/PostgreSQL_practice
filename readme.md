@@ -1,1 +1,14 @@
-textbook: https://www.amazon.co.jp/SQL-%E7%AC%AC2%E7%89%88-%E3%82%BC%E3%83%AD%E3%81%8B%E3%82%89%E3%81%AF%E3%81%98%E3%82%81%E3%82%8B%E3%83%87%E3%83%BC%E3%82%BF%E3%83%99%E3%83%BC%E3%82%B9%E6%93%8D%E4%BD%9C-%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0%E5%AD%A6%E7%BF%92%E3%82%B7%E3%83%AA%E3%83%BC%E3%82%BA-%E3%83%9F%E3%83%83%E3%82%AF/dp/4798144452/ref=tmm_pap_swatch_0?_encoding=UTF8&qid=1586060460&sr=8-2
+## 概要
+[SQL 第2版 ゼロからはじめるデータベース操作](https://www.shoeisha.co.jp/book/detail/9784798144450)で学んだものを中心に、SQL構文を自分用にまとめました。
+
+## 内容
+1. [CREATE TABLE](https://github.com/emori92/PostgreSQL_practice/blob/master/1_create_table.sql)
+2. [SELECT](https://github.com/emori92/PostgreSQL_practice/blob/master/2_select_query.sql)
+3. [GROUP BY](https://github.com/emori92/PostgreSQL_practice/blob/master/3_groupby_query.sql)
+4. [INSERT, DLETE, UPDATE](https://github.com/emori92/PostgreSQL_practice/blob/master/4_insert_delete_update.sql)
+5. [VIEW, SUBQUERY](https://github.com/emori92/PostgreSQL_practice/blob/master/5_view_subquery.sql)
+6. [関数、CASE](https://github.com/emori92/PostgreSQL_practice/blob/master/6_func_like_case.sql)
+7. [UNION, JOIN](https://github.com/emori92/PostgreSQL_practice/blob/master/7_union_join.sql)
+8. [ウインドウ関数](https://github.com/emori92/PostgreSQL_practice/blob/master/8_window_grouping.sql)
+9. [Jupyter Notebookの接続](https://github.com/emori92/PostgreSQL_practice/blob/master/Connect_PostgreSQL.ipynb)
+10. [GRANT](https://github.com/emori92/PostgreSQL_practice/blob/master/role_user.sql)
