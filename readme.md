@@ -1,5 +1,5 @@
 ## 概要
-[SQL 第2版 ゼロからはじめるデータベース操作](https://www.shoeisha.co.jp/book/detail/9784798144450)で学んだものを中心に、SQL構文を自分用にまとめました。
+[SQL 第2版 ゼロからはじめるデータベース操作](https://www.shoeisha.co.jp/book/detail/9784798144450)で学んだものを自分用にまとめました。
 
 ## 内容
 1. [CREATE TABLE](https://github.com/emori92/PostgreSQL_practice/blob/master/1_create_table.sql)
